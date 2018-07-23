@@ -17,7 +17,7 @@ class SnippetList(APIView):
     코드 조각을 모두 보여주거나 새 코드 조각을 만듭니다.
     """
 
-    def get(self, request, format):
+    def get(self, request, format=None):
         snippets = Snippet.objects.all()
         serializer = SnippetSerializer(snippets, many=True)
         return Response(serializer.data)
