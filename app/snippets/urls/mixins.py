@@ -7,7 +7,7 @@ urlpatterns = [
     path('snippets/',
          views.SnippetList.as_view(),
          name='snippet-list'),
-    path('snippets/<int:snippet_pk>/',
+    path('snippets/<int:pk>/',
          views.SnippetDetail.as_view(),
          name='snippet-detail'),
 ]
