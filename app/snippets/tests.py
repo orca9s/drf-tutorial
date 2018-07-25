@@ -1,12 +1,18 @@
 import json
 import random
 
+from django.contrib.auth import get_user_model
 from rest_framework import status
-from rest_framework.test import APITestCase
+from rest_framework.test import APITestCase, APIClient
 
 from snippets.serializers import SnippetSerializer
 from .models import Snippet
 
+User = get_user_model()
+
+DUMMY_USER_USERNAME = 'dummy_username'
+def get_dummy_user():
+	return User.objects.create_user(username=DUMMY_USER_USERNAME)
 
 class SnippetListTest(APITestCase):
 	"""
@@ -28,10 +34,15 @@ class SnippetListTest(APITestCase):
 			Django ORM을 이용한 QuerySet의 갯수가 같은지 확인
 		:return:
 		"""
+		user = User.objects.create_user(username='jsm')
 		for i in range(random.randint(10, 100)):
-			Snippet.objects.create(code=f'a = {i}')
+			Snippet.objects.create(
+				code=f'a = {i}',
+				owner=user,
+			)
 		response = self.client.get(self.URL)
 		data = json.loads(response.content)
+
 
 		# response로 받은 JSON데이터의 길이와
 		# Snippet테이블의 자료수(count)가 같은지
@@ -42,8 +53,12 @@ class SnippetListTest(APITestCase):
 		Snippet list의 결과가 생성일자 내림차순인지 확인
 		:return:
 		"""
+		user = user = User.objects.create_user(username='jsm')
 		for i in range(random.randint(5, 10)):
-			Snippet.objects.create(code=f'a = {i}')
+			Snippet.objects.create(
+				code=f'a = {i}',
+				owner=user,
+			)
 		response = self.client.get(self.URL)
 		data = json.loads(response.content)
 		# snippets = Snippet.objects.order_by('-created')

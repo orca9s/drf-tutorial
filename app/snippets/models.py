@@ -25,7 +25,7 @@ class Snippet(models.Model):
     highlighted = models.TextField()
 
     class Meta:
-        ordering = ('created',)
+        ordering = ('-created',)
 
     def save(self, *args, **kwargs):
         # 지정한 언어(language)에 대한 분석기 (lexer)할당
