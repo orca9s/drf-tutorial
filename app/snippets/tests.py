@@ -34,7 +34,7 @@ class SnippetListTest(APITestCase):
 			Django ORM을 이용한 QuerySet의 갯수가 같은지 확인
 		:return:
 		"""
-		user = User.objects.create_user(username='jsm')
+		user = get_dummy_user()
 		for i in range(random.randint(10, 100)):
 			Snippet.objects.create(
 				code=f'a = {i}',
@@ -53,7 +53,7 @@ class SnippetListTest(APITestCase):
 		Snippet list의 결과가 생성일자 내림차순인지 확인
 		:return:
 		"""
-		user = user = User.objects.create_user(username='jsm')
+		user = get_dummy_user()
 		for i in range(random.randint(5, 10)):
 			Snippet.objects.create(
 				code=f'a = {i}',
@@ -97,7 +97,8 @@ class SnippetCreateTest(APITestCase):
 		# 	data=CREATE_DATA,
 		# 	content_type='application/json',
 		# )
-
+		user = get_dummy_user()
+		self.client.force_authenticate(user=user)
 		response = self.client.post(
 			self.URL,
 			data={
@@ -112,6 +113,8 @@ class SnippetCreateTest(APITestCase):
 		요청 후 설치 DB에 저장되었는지 (모든 필드값이 정상적으로 저장 되는지)
 		:return:
 		"""
+		user = get_dummy_user()
+		self.client.force_authenticate(user=user)
 		snippet_data = {
 			'title': 'SnippetTitle',
 			'code': 'SnippetCode',
@@ -131,11 +134,16 @@ class SnippetCreateTest(APITestCase):
 		for key in snippet_data:
 			self.assertEqual(data[key], snippet_data[key])
 
+		# Snippet생성과정에서 사용된 user가 owner인지 확인
+		self.assertEqual(data['owner'], user.username)
+
 	def test_snippet_create_missing_code_raise_exception(self):
 		"""
 		'code'데이터가 주어지지 않을 경우 적절한 Exception이 발생하는지
 		:return:
 		"""
+		user = get_dummy_user()
+		self.client.force_authenticate(user=user)
 		snippet_data = {
 			'title': 'SnippetTitle',
 			'linenos': True,
