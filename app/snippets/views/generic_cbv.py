@@ -4,6 +4,9 @@ from snippets.models import Snippet
 from snippets.serializers import SnippetSerializer, UserSerializer
 from rest_framework import generics
 
+
+from snippets.views import permissions
+
 User = get_user_model()
 
 __all__ = (
@@ -16,6 +19,7 @@ __all__ = (
 class SnippetList(generics.ListCreateAPIView):
     queryset = Snippet.objects.all()
     serializer_class = SnippetSerializer
+    permission_classes = (permissions.IsOwnerReadOnly)
 
     def perform_create(self, serializer):
         # SnippetSerializer로 전달답은 데이터에
@@ -27,6 +31,8 @@ class SnippetList(generics.ListCreateAPIView):
 class SnippetDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Snippet.objects.all()
     serializer_class = SnippetSerializer
+    permission_classes = (permissions.IsOwnerReadOnly)
+
 
 
 class UserList(generics.ListAPIView):
