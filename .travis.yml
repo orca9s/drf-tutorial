@@ -1,0 +1,36 @@
+language: python
+python:
+  - 3.6
+services:
+  - postgresql
+addons:
+  postgresql: '9.4'
+before_install:
+
+install:
+  - pip install -r requirements.txt
+branches:
+  only:
+  - master
+before_script:
+  - psql -c 'create deatabase travis_ci_test;' -U postgeres
+script:
+  - cd app
+  - "./manage.py test"
+  - cd ..
+  - git add -A
+before_deploy:
+  - zip -r archive.zip .
+deploy:
+  provider: elasticbeanstalk
+  zip_file: archive.zip
+  access_key_id: "$AWS_ACCESS_KEY"
+  secret_access_key:
+    secure: "$AWS_SECRET_KEY"
+  region: ap-northeast-2
+  app:
+  env:
+  bucket_name:
+  skip_cleanup: true
+  on:
+    branch: master
